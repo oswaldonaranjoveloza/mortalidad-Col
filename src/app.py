@@ -1,7 +1,7 @@
 # =========================================================================
 # PROGRAMA COMPLETO: Análisis de Mortalidad en Colombia (2019)
 # =========================================================================
-import os
+
 import pandas as pd
 import geopandas as gpd
 import plotly.express as px
@@ -13,9 +13,9 @@ import json
 # === 1. CARGA DE DATOS ===
 # =========================================================================
 try:
-    df_mortalidad = pd.read_excel('data/Mortalidad.xlsx', sheet_name='No_Fetales_2019')
-    df_divipola = pd.read_excel('data/Divipola.xlsx', sheet_name='Hoja1')
-    df_codigos = pd.read_excel('data/CIE10.xlsx', sheet_name='Final')
+    df_mortalidad = pd.read_excel('Data/Mortalidad.xlsx', sheet_name='No_Fetales_2019')
+    df_divipola = pd.read_excel('Data/Divipola.xlsx', sheet_name='Hoja1')
+    df_codigos = pd.read_excel('Data/CIE10.xlsx', sheet_name='Final')
     print(" Archivos cargados correctamente.")
 except FileNotFoundError:
     print(" ERROR: faltan archivos .xlsx")
@@ -91,7 +91,7 @@ df_mapa['shapeName'] = df_mapa['DEPARTAMENTO'].map(dic_equivalencias)
 try:
     gdf = gpd.read_file('colombia_departamentos.geojson')
 except:
-    gdf = gpd.read_file('data/geoBoundaries-COL-ADM1_simplified.geojson')
+    gdf = gpd.read_file('Data/geoBoundaries-COL-ADM1_simplified.geojson')
 gdf = gdf.to_crs(epsg=4326)
 geo_json = json.loads(gdf.to_json())
 
@@ -132,37 +132,11 @@ fig_barras_violencia = px.bar(df_ciudades_violentas, x='MUNICIPIO', y='Total_Hom
 # =========================================================================
 # === 6. Top 10 ciudades con menor mortalidad (porcentaje preciso) ===
 # =========================================================================
-#df_ciudades_total = df_final.groupby('MUNICIPIO', as_index=False).size().rename(columns={'size':'Total_Muertes'})
-#df_ciudades_total['Porcentaje'] = df_ciudades_total['Total_Muertes'].values/df_ciudades_total['Total_Muertes'].sum()*100
-#df_ciudades_menor = df_ciudades_total.sort_values('Total_Muertes').head(10)
-#fig_pie_menor = px.pie(df_ciudades_menor, names='MUNICIPIO', values='Porcentaje',
-#                       title='Top 10 Ciudades con Menor Mortalidad (%)')
-
-df_ciudades_total = (df_final.groupby('MUNICIPIO', as_index=False).size().rename(columns={'size': 'Total_Muertes'}))
-
-# Calcular porcentaje con más precisión
-total_general = df_ciudades_total['Total_Muertes'].sum()
-df_ciudades_total['Porcentaje'] = (df_ciudades_total['Total_Muertes'] / total_general) * 100
-
-# Seleccionar las 10 ciudades con menor mortalidad
+df_ciudades_total = df_final.groupby('MUNICIPIO', as_index=False).size().rename(columns={'size':'Total_Muertes'})
+df_ciudades_total['Porcentaje'] = df_ciudades_total['Total_Muertes'].values/df_ciudades_total['Total_Muertes'].sum()*100
 df_ciudades_menor = df_ciudades_total.sort_values('Total_Muertes').head(10)
-
-# Crear gráfico de torta mostrando cantidad y porcentaje con dos decimales
-fig_pie_menor = px.pie(
-    df_ciudades_menor,
-    names='MUNICIPIO',
-    values='Total_Muertes',
-    title='Top 10 Ciudades con Menor Mortalidad (Cantidad y Porcentaje)',
-    hole=0,  # puedes cambiar a 0.3 si prefieres estilo "donut"
-)
-
-# Mostrar etiquetas con nombre + cantidad + porcentaje exacto
-fig_pie_menor.update_traces(
-    textinfo='label+value+percent',
-    texttemplate='%{label}<br>%{value} muertes<br>(%{percent:.2%})',
-    hovertemplate='<b>%{label}</b><br>Total: %{value} muertes<br>Porcentaje: %{percent:.2%}',
-    textfont_size=13
-) 
+fig_pie_menor = px.pie(df_ciudades_menor, names='MUNICIPIO', values='Porcentaje',
+                       title='Top 10 Ciudades con Menor Mortalidad (%)')
 
 # =========================================================================
 # === 7. Tabla de 10 principales causas de muerte ===
@@ -202,10 +176,8 @@ app = Dash(__name__)
 server = app.server
 
 app.layout = html.Div(style={'backgroundColor':'#f8f9fa','padding':'20px'}, children=[
-#    html.H1('Análisis de Mortalidad en Colombia (2019) 🇨🇴', style={'textAlign':'center','color':'#343a40','margin-bottom':'30px'}),
-    html.H1('Análisis de Mortalidad en Colombia (2019) 🇨🇴', style={'textAlign': 'center', 'color': '#343a40', 'margin-bottom': '10px'}),
-    html.H4('Autores: Oswaldo Naranjo Veloza y Manuel Antonio Sanabria Gil', style={'textAlign': 'center', 'color': '#6c757d', 'margin-bottom': '30px'}),
-#
+    html.H1('Análisis de Mortalidad en Colombia (2019) 🇨🇴', style={'textAlign':'center','color':'#343a40','margin-bottom':'30px'}),
+
     html.Div(style={'backgroundColor':'white','padding':'10px','borderRadius':'8px','boxShadow':'0 4px 6px rgba(0,0,0,0.1)','maxWidth':'95%','margin':'auto'}, children=[
         dcc.Graph(id='mapa-mortalidad', figure=fig_mapa),
         dcc.Graph(id='lineas-mes', figure=fig_lineas),
@@ -218,6 +190,5 @@ app.layout = html.Div(style={'backgroundColor':'#f8f9fa','padding':'20px'}, chil
 ])
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8050))  # Render usa una variable PORT
-    print(f"Servidor ejecutándose en: http://127.0.0.1:{port}/")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    print(" Servidor ejecutándose en: http://127.0.0.1:8050/")
+    app.run(debug=True)
