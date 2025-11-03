@@ -148,6 +148,13 @@ fig_tabla_causas = go.Figure(data=[go.Table(
     cells=dict(values=[df_causas.CodigoMuerte, df_causas.DescripcionCodigoMuerte, df_causas.Total_Casos],
                fill_color='lavender', align='left'))
 ])
+# 🔸 Agregar título a la figura
+fig_tabla_causas.update_layout(
+    title={
+        'text': 'Tabla – Principales causas de muerte',
+        'yanchor': 'top'
+    },
+)
 
 # =========================================================================
 # === 8. Barras apiladas por sexo y departamento ===
