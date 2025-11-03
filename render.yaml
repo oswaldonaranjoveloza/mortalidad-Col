@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: mortality-dashboard
+    env: python
+    plan: free  # Cambia a 'starter' si quieres que no se suspenda
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn src.app:server
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13
+      - key: PORT
+        value: 10000

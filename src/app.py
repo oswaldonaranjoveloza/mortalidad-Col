@@ -2,6 +2,7 @@
 # PROGRAMA COMPLETO: Análisis de Mortalidad en Colombia (2019)
 # =========================================================================
 import os
+from app import server  # si tu Dash está definido como "app = Dash(...)" usa "server = app.server"
 import pandas as pd
 import geopandas as gpd
 import plotly.express as px
