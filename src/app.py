@@ -1,7 +1,7 @@
 # =========================================================================
 # PROGRAMA COMPLETO: Análisis de Mortalidad en Colombia (2019)
 # =========================================================================
-
+import os
 import pandas as pd
 import geopandas as gpd
 import plotly.express as px
@@ -13,9 +13,9 @@ import json
 # === 1. CARGA DE DATOS ===
 # =========================================================================
 try:
-    df_mortalidad = pd.read_excel('Data/Mortalidad.xlsx', sheet_name='No_Fetales_2019')
-    df_divipola = pd.read_excel('Data/Divipola.xlsx', sheet_name='Hoja1')
-    df_codigos = pd.read_excel('Data/CIE10.xlsx', sheet_name='Final')
+    df_mortalidad = pd.read_excel('data/Mortalidad.xlsx', sheet_name='No_Fetales_2019')
+    df_divipola = pd.read_excel('data/Divipola.xlsx', sheet_name='Hoja1')
+    df_codigos = pd.read_excel('data/CIE10.xlsx', sheet_name='Final')
     print(" Archivos cargados correctamente.")
 except FileNotFoundError:
     print(" ERROR: faltan archivos .xlsx")
@@ -91,7 +91,7 @@ df_mapa['shapeName'] = df_mapa['DEPARTAMENTO'].map(dic_equivalencias)
 try:
     gdf = gpd.read_file('colombia_departamentos.geojson')
 except:
-    gdf = gpd.read_file('Data/geoBoundaries-COL-ADM1_simplified.geojson')
+    gdf = gpd.read_file('data/geoBoundaries-COL-ADM1_simplified.geojson')
 gdf = gdf.to_crs(epsg=4326)
 geo_json = json.loads(gdf.to_json())
 
